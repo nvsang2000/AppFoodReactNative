@@ -2,17 +2,15 @@ import React, {useState} from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AntDesign,Entypo,FontAwesome5,Ionicons } from '@expo/vector-icons';
 import Colors from "../../theme/Colors";
-import{
-   style
-
-} from "../../components/styleProfile"
+import{ style} from "./styles/styleTabProfile"
 
 import { 
      SafeAreaView, 
      ScrollView, 
      View,
      Text,
-     Image
+     Image,
+     TouchableOpacity
  } from "react-native";
  import { 
       StyledButton,
@@ -24,27 +22,13 @@ import {
      API_TOKEN
  } from '@env'// Environment variable
 import { accessToken, removeToken} from '../../components/Storages/Storage';
+import EditProfile from './TabProfileScreen/EditProfile'
 import axios from "axios";
 
-const Action = ({title,icon, screen}) => {
-     return(
-          <View style={style.action} >
-               <View style={style.rowAction}>
-                    <View style={style.iconContainer}>
-                         <FontAwesome5 name={icon} color={Colors.brand} size={26}/>
-                    </View>
-                    <Text style={style.actionTitle} title>
-                         {title}
-                    </Text>
-                    
-               </View>
-               <Entypo  style={style.iconRight} name="chevron-small-right" size={24} color="black" />
-               
-          </View>
-     )
-}
 
-const url =  API_URL + '/api/auth/logout'
+
+
+const url =  API_URL + '/api/auth/logout' 
 const TabProfile = ({navigation}) => {
      const [username, setusername] = useState()
      const [email, setemail] = useState()
@@ -69,7 +53,7 @@ const TabProfile = ({navigation}) => {
                const result = response.data
                const{success,message} =result
                if(success == true){
-                    console.log(result)
+                    console.log(message)
                     removeToken()
                     navigation.navigate('Login') 
                }else{
@@ -80,6 +64,24 @@ const TabProfile = ({navigation}) => {
                console.log(error.JSON)
           }) 
      }
+     const Action = ({title,icon, screen}) => {
+          return(
+          <View style={style.action} >
+               <TouchableOpacity style={style.rowAction} screen onPress={()=> navigation.navigate(screen)} >
+                    <View style={style.rowAction}>
+                         <View style={style.iconContainer}>
+                              <FontAwesome5 icon name={icon} color={Colors.brand} size={26}/>
+                         </View>
+                         <Text style={style.actionTitle} title>
+                              {title}
+                         </Text>
+                         
+                    </View>
+                    <Entypo  style={style.iconRight} name="chevron-small-right" size={24} color="black" />
+               </TouchableOpacity>          
+          </View>
+          )
+     } 
 
      return (
           <SafeAreaView style={style.container}>
@@ -94,11 +96,11 @@ const TabProfile = ({navigation}) => {
                          </View>
                     </View> 
                     <View style={style.actions}>
-                         <Action title={'Địa Chỉ'} icon={'map-marker'}/>
-                         <Action title={'Thanh Toán'} icon={'paypal'}/>
-                         <Action title={'Các Hóa Đơn'} icon={'shopping-bag'}/>
-                         <Action title={'Chỉnh sửa thông tin'} icon={'user-edit'}/>
-                         <Action title={'Trợ giúp khách hàng'} icon={'question'}/>
+                         <Action title={'Địa Chỉ'} icon={'map-marker'} screen={'EditProfile'}/>
+                         <Action title={'Thanh Toán'} icon={'paypal'} screen={'EditProfile'}/>
+                         <Action title={'Các Hóa Đơn'} icon={'shopping-bag'} screen={'EditProfile'}/>
+                         <Action title={'Chỉnh sửa thông tin'} icon={'user-edit'} screen={'EditProfile'}/>
+                         <Action title={'Trợ giúp khách hàng'} icon={'question'} screen={'EditProfile'}/>
                     </View>
                     <StyledButton onPress={Logout}>
                          <ButtonText  >

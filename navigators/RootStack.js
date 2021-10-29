@@ -7,6 +7,7 @@ import Signup from '../screens/RegisterScreen/Singup';
 import Home from '../screens/HomeScreen/Home';
 import Splash from '../screens/SplashScreen/Splash';
 import TabProfile from '../screens/HomeScreen/TabProfile';
+import EditProfile from '../screens/HomeScreen/TabProfileScreen/EditProfile';
 
 
 import Colors from '../theme/Colors';
@@ -19,13 +20,14 @@ const RootStack = () => {
                 screenOptions={{
                     headerShown: false
                 }}
-                initialRouteName="Login"
+                initialRouteName="Splash"
             >
-                <Stack.Screen name= "TabProfile" component={TabProfile}/>
                 <Stack.Screen name= "Splash" component={Splash}/>
                 <Stack.Screen name= "Login" component={Login}/>
                 <Stack.Screen name= "Signup" component={Signup}/>
                 <Stack.Screen name= "Home" component={Home}/>
+                <Stack.Screen name= "TabProfile" component={TabProfile}/>
+                <Stack.Screen name= "EditProfile" component={EditProfile}/>
 
             </Stack.Navigator>
         </NavigationContainer>

@@ -1,5 +1,5 @@
 import styled from 'styled-components/native'
-import Colors from '../theme/Colors';
+import Colors from '../../../theme/Colors';
 import { StyleSheet } from 'react-native';
 import Constants from 'expo-constants';
 const StatusBarHeight = Constants.statusBarHeight;
@@ -43,12 +43,13 @@ export const style = StyleSheet.create({
         color: Colors.black
     },
     actions: {
-      padding: 5,
+      padding: 10,
+      flexDirection: 'column',
     },
     action: {
       marginTop: 8,
       flex:1,
-      paddingHorizontal: 10,
+      paddingHorizontal: 5,
       backgroundColor: Colors.primary,
       flexDirection: 'row',
 
@@ -56,7 +57,6 @@ export const style = StyleSheet.create({
     rowAction: {
       flex:1,
       flexDirection: 'row', 
-      margin: 10,
       alignSelf: 'center'
     },
     actionTitle: {
