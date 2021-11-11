@@ -113,7 +113,9 @@ export const StyledButton = styled.TouchableOpacity`
   align-items: center;
   border-radius: 5px;
   margin-vertical: 5px;
+  width:300px;
   height: 60px;
+  alignSelf:center;
 
   ${(props) =>
     props.google == true &&

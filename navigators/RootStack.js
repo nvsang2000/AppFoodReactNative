@@ -8,7 +8,8 @@ import Home from '../screens/HomeScreen/Home';
 import Splash from '../screens/SplashScreen/Splash';
 import TabProfile from '../screens/HomeScreen/TabProfile';
 import EditProfile from '../screens/HomeScreen/TabProfileScreen/EditProfile';
-
+import Pay from '../screens/HomeScreen/TabProfileScreen/Pay';
+import Custormerhelp from '../screens/HomeScreen/TabProfileScreen/Custormerhelp';
 
 import Colors from '../theme/Colors';
 const  Stack = createNativeStackNavigator()
@@ -20,7 +21,7 @@ const RootStack = () => {
                 screenOptions={{
                     headerShown: false
                 }}
-                initialRouteName="Splash"
+                initialRouteName="TabProfile"
             >
                 <Stack.Screen name= "Splash" component={Splash}/>
                 <Stack.Screen name= "Login" component={Login}/>
@@ -28,7 +29,8 @@ const RootStack = () => {
                 <Stack.Screen name= "Home" component={Home}/>
                 <Stack.Screen name= "TabProfile" component={TabProfile}/>
                 <Stack.Screen name= "EditProfile" component={EditProfile}/>
-
+                <Stack.Screen name= "Pay" component={Pay}/>
+                <Stack.Screen name= "Custormerhelp" component={Custormerhelp}/>
             </Stack.Navigator>
         </NavigationContainer>
     )

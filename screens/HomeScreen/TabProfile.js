@@ -22,7 +22,9 @@ import {
      API_TOKEN
  } from '@env'// Environment variable
 import { accessToken, removeToken} from '../../components/Storages/Storage';
-import EditProfile from './TabProfileScreen/EditProfile'
+import EditProfile from './TabProfileScreen/EditProfile';
+import Pay from './TabProfileScreen/Pay';
+import Custormerhelp from './TabProfileScreen/Custormerhelp'
 import axios from "axios";
 
 
@@ -97,10 +99,10 @@ const TabProfile = ({navigation}) => {
                     </View> 
                     <View style={style.actions}>
                          <Action title={'Địa Chỉ'} icon={'map-marker'} screen={'EditProfile'}/>
-                         <Action title={'Thanh Toán'} icon={'paypal'} screen={'EditProfile'}/>
+                         <Action title={'Thanh Toán'} icon={'paypal'} screen={'Pay'}/>
                          <Action title={'Các Hóa Đơn'} icon={'shopping-bag'} screen={'EditProfile'}/>
                          <Action title={'Chỉnh sửa thông tin'} icon={'user-edit'} screen={'EditProfile'}/>
-                         <Action title={'Trợ giúp khách hàng'} icon={'question'} screen={'EditProfile'}/>
+                         <Action title={'Trợ giúp khách hàng'} icon={'question'} screen={'Custormerhelp'}/>
                     </View>
                     <StyledButton onPress={Logout}>
                          <ButtonText  >
