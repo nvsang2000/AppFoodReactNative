@@ -1,5 +1,12 @@
-import React, {Component, useState} from 'react';
-import {SafeAreaView, StyleSheet, View, Text, Image} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {
+  SafeAreaView, 
+  StyleSheet, 
+  View, 
+  Text, 
+  Image,
+  Dimensions 
+} from 'react-native';
 import {FlatList, TouchableOpacity} from 'react-native-gesture-handler';
 import  { 
   Fontisto, 
@@ -9,9 +16,12 @@ import  {
   AntDesign,
   MaterialIcons
 } from '@expo/vector-icons';//icon
-import COLORS from '../../../consts/colors';
-import foods from '../../../consts/foods';
-import {PrimaryButton} from '../../../components/Button';
+import Colors from '../../../theme/Colors';
+import { 
+      StyledButton,
+      ButtonText
+
+} from "../../../components/styles";
 import {
      API_URL,
 } from '@env'// Environment variable
@@ -19,106 +29,115 @@ import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function(props) {
+  const [cartItem, setCartItem] = useState([])
   const [accesstoken, setAccessToken] = useState()
-  AsyncStorage.getItem('access_token').then(accesstoken => {
-          setAccessToken(accesstoken)
-    })
-  return <CartScreen {...props} token={accesstoken}/>
+  const [isLoading, setLoad] = useState(true)
+  const [allPayMent, setAllPayMent] = useState()
 
-}
 
-class CartScreen extends Component {
-  constructor(props){
-    super(props)
-    this.state={
-      CartItems : []
-    }
-
+  AsyncStorage.getItem('access_token').then(accesstoken => {setAccessToken(accesstoken)})
+  useEffect(() => {
+    let abortController = new AbortController(); 
     const url =  API_URL + '/api/user/get-cart'
-    const { accesstoken } = this.props
-    axios.get(url,{
-        headers: {
-              Authorization: 'Bearer ' + accesstoken
+    async function getCartItems (){
+      const res = await axios.get(url,{
+            headers: { Authorization: 'Bearer ' + accesstoken }
+          })
+      return res
+    }
+    getCartItems().then((res)=> {  
+        const result = res.data
+        const {success, cartItems, allPayMent} =result
+        if(success == true){
+          setCartItem(cartItems) 
+          setAllPayMent(allPayMent)
+        }else{
+          console.log("server fail")
+          setLoad(false)
         }
+        
+    }).catch(error => {
+        console.log(error.JSON) 
+        setLoad(false)
+             
     })
-    .then((response)=> {  
-      const result = response.data
-      this.setState({CartItems: result})
-    })
-    .catch(error => {
-      console.log(error.JSON)      
-    })
-  }
-  render(){
-    const {Cart} = this.state
-    console.log(Cart)
-    const CartCard = ({item}) => {
-      return (
-            <View style={style.cartCard}>
-              <Image source={item.image} style={{height: 80, width: 80}} />
-              <View
-                style={{
-                  height: 100,
-                  marginLeft: 10,
-                  paddingVertical: 20,
-                  flex: 1,
-                }}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>{item.name}</Text>
-                <Text style={{fontSize: 13, color: COLORS.grey}}>
-                  {item.ingredients}
-                </Text>
-                <Text style={{fontSize: 17, fontWeight: 'bold'}}>${item.price}</Text>
-              </View>
-              <View style={{marginRight: 20, alignItems: 'center'}}>
-                <Text style={{fontWeight: 'bold', fontSize: 18}}>3</Text>
-                <View style={style.actionBtn}>
-                  <Ionicons name="remove" size={24} color={COLORS.white} />
-                  <Ionicons name="add" size={24} color={COLORS.white} />
-                </View>
-              </View>
-            </View>
-          );
-      };
-    return(
-      <SafeAreaView style={{backgroundColor: COLORS.white, flex: 1}}>
-      <View style={style.header}>
-        <Text style={{fontSize: 20, fontWeight: 'bold', marginTop: 20}}>Giỏ Hàng Của Tôi</Text>
+    
+
+    return () => {  
+      abortController.abort();  
+    } 
+    
+  }, [isLoading])
+ 
+  function renderCart(item) {
+    return (
+      <View style={styles.cartCard}>
+        <Image source={{uri: item.product.avata}} style={{height: 80, width: 80}} />
+        <View
+          style={{
+            height: 100,
+            marginLeft: 10,
+            paddingVertical: 20,
+            flex: 1,
+          }}>
+          <Text style={{fontWeight: 'bold', fontSize: 16}}>{item.product.name}</Text>
+          <Text style={{fontSize: 13, color: Colors.grey}}>
+            
+          </Text>
+          <Text style={{fontSize: 17, fontWeight: 'bold'}}>{item.price}đ</Text>
+        </View>
+        <View style={{marginRight: 20, alignItems: 'center'}}>
+          <Text style={{fontWeight: 'bold', fontSize: 18}}>{item.quantity}</Text>
+          <View style={styles.actionBtn}>
+            <Ionicons name="remove" size={24} color={Colors.white} />
+            <Ionicons name="add" size={24} color={Colors.white} />
+          </View>
+        </View>
       </View>
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{paddingBottom: 80}}
-        data={foods}
-        renderItem={({item}) => <CartCard item={item} />}
-        ListFooterComponentStyle={{paddingHorizontal: 20, marginTop: 20}}
-        ListFooterComponent={() => (
-          <View>
-            <View
-              style={{
+  )}
+  return (
+    <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={{fontSize: 20, fontWeight: 'bold', marginTop: 20}}>Giỏ Hàng Của Tôi</Text>
+        </View>
+        <FlatList 
+          data={cartItem}
+          Horizontal
+          keyExtractor= {(item) => item._id.toString() }
+          renderItem={({item,  props}) => renderCart(item, props)}
+          
+          />
+        <View style={{margin: 20}}>
+          <View 
+            style={{
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 marginVertical: 15,
-              }}>
-              <Text style={{fontSize: 18, fontWeight: 'bold'}}>
-                Total Price
-              </Text>
-              <Text style={{fontSize: 18, fontWeight: 'bold'}}>$50</Text>
-            </View>
-            <View style={{marginHorizontal: 30}}>
-              <TouchableOpacity >
-                <PrimaryButton title="CHECKOUT" />
-              </TouchableOpacity>
-              
-            </View>
+            }}
+          >
+            <Text style={{fontSize: 18, fontWeight: 'bold'}}>
+              Total Price
+            </Text>
+            <Text style={{fontSize: 18, fontWeight: 'bold'}}>{allPayMent} đ</Text>
           </View>
-        )}
-      />
-    </SafeAreaView>
-
-    )
-  }
-}
-
-const style = StyleSheet.create({
+          <View >
+            <StyledButton >
+                <ButtonText  >
+                    Thanh Toán
+                </ButtonText>
+            </StyledButton> 
+            
+          </View>
+        </View>
+          
+      </View>
+      
+)}
+const styles = StyleSheet.create({
+  container:{
+    flex:1,
+    marginTop:20,
+  },
   header: {
     paddingVertical: 20,
     flexDirection: 'row',
@@ -129,7 +148,7 @@ const style = StyleSheet.create({
     height: 100,
     elevation: 15,
     borderRadius: 10,
-    backgroundColor: COLORS.white,
+    backgroundColor: Colors.white,
     marginVertical: 10,
     marginHorizontal: 20,
     paddingHorizontal: 10,
@@ -139,12 +158,12 @@ const style = StyleSheet.create({
   actionBtn: {
     width: 80,
     height: 30,
-    backgroundColor: COLORS.primary,
+    backgroundColor: Colors.button_pay,
     borderRadius: 30,
     paddingHorizontal: 5,
     flexDirection: 'row',
     justifyContent: 'center',
     alignContent: 'center',
   },
-});
-
+});  
+       

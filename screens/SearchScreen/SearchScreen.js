@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 
 import {
     View,
@@ -23,97 +23,84 @@ import  {
 
 export default function (props){
     const navigation = useNavigation();
+    const [product, setProduct] = useState([])
+    const [KeySearch, setKeySearch] = useState('')
+    const [isLoading, setIsLoad] =useState(true)
 
-    return <GetSearch {...props} navigation={navigation}/> 
-}
-class GetSearch extends Component {
-    constructor(prop){
-        super(prop)
-        this.state={
-            
-            Product : []
-        }
-        this.state={
-            KeySearch : ""
-        }
-        console.log(this.state.KeySearch)
-        getKey = (key) => {
-            url =  API_URL + '/api/search-key'
-            headers = {
-                'Content-Type': 'application/json',
-            }
-            axios.post( url, {
-                headers: headers,
-                key
-            }).then((response) => {
-                const result =  response.data
-                
-                this.setState({Product : result})
-                //console.log(result)   
-            }).catch(error => {
-                    console.log(error.JSON)
+    useEffect(() =>{
+        function getKey () {
+            const url =  API_URL + '/api/search-key'
+            axios.get(url,KeySearch,{
+            headers: { 
+                "content-type": "application/json" 
+            },
+            data : 'banh cuon'
+            }).then((response)=> {
+                const result = response.data
+                const {success, product} = result
+                console.log(result)
+                if(success == true){
+                    console.log(product)
+                    setProduct(product)
+ 
+                }else{
+                    setIsLoad(false)
+                }
+            })
+            .catch(error => {
+                setIsLoad(false)
+                console.log(error)
             })
         }
-    }
-    render(){
-        const key = this.state.KeySearch
-        const { navigation } = this.props
-        if(key == ''){
-            console.log("key null")
-        }else{
-            getKey(key)
-        }
-        const renderProduct =(item, index)=>{
-            return (
-                <View style={styles.card}> 
-                <TouchableOpacity onPress={() => navigation.navigate('DetailProduct',{item})}>       
-                    <Image style={styles.cardImage} source={{uri:item.avata}}/>
-                    <View style={styles.cardContain}>
-                        <Text style={styles.title}>{item.name}</Text>
-                    </View>
-                </TouchableOpacity>
-                </View>      
-            )
-        }
+        getKey()
+
+    }, [isLoading])
+    
+
+    const renderProduct =(item, index)=>{
         return (
-            <SafeAreaView>
-                <View style={styles.container} >
-                    <View style={styles.searchContainer}>
-                        <TouchableOpacity onPress={() => navigation.goBack()}>
-                            <View style={styles.vwSearch}>
-                                <Entypo style={styles.icSearch}  name="arrow-long-left" size={24} color="black" />
-                            </View>
-                        </TouchableOpacity>
-                        <TextInput
-                        style={styles.textInput}
-                        onChangeText={
-                            text => setTimeout(
-                                function() {
-                                    this.setState({KeySearch : text})
-                                }.bind(this),1000
-                                )
-                            }
-                        placeholder="  Enter Search ..."
-                        
-                        />
-                    </View>
-                
+            <View style={styles.card}> 
+            <TouchableOpacity onPress={() => navigation.navigate('DetailProduct',{item})}>       
+                <Image style={styles.cardImage} source={{uri:item.avata}}/>
+                <View style={styles.cardContain}>
+                    <Text style={styles.title}>{item.name}</Text>
                 </View>
-                <View>
-                    <FlatList 
-                        style={styles.list}
-                        contentContainerStyle={styles.listContainer}
-                        data={this.state.Product}
-                        horizontal={false}
-                        numColumns={2}
-                        keyExtractor= {(item) =>  item._id.toString()}
-                        renderItem={({item, index, navigation}) => renderProduct(item, index) }/>
-                </View>
-            </SafeAreaView>
-            
+            </TouchableOpacity>
+            </View>      
         )
     }
+    return (
+        <SafeAreaView>
+            <View style={styles.container} >
+                <View style={styles.searchContainer}>
+                    <TouchableOpacity>
+                        <View style={styles.vwSearch}>
+                            <Entypo style={styles.icSearch}  name="arrow-long-left" size={24} color="black" />
+                        </View>
+                    </TouchableOpacity>
+                    <TextInput
+                    style={styles.textInput}
+                    onChangeText={ text => setKeySearch(text) }
+                    placeholder="  Enter Search ..."
+                    
+                    />
+                </View>
+            
+            </View>
+            <View>
+                <FlatList 
+                    style={styles.list}
+                    contentContainerStyle={styles.listContainer}
+                    data={product}
+                    horizontal={false}
+                    numColumns={2}
+                    keyExtractor= {(item) =>  item._id.toString()}
+                    renderItem={({item, index, navigation}) => renderProduct(item, index) }/>
+            </View>
+        </SafeAreaView>
+    )
 }
+
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',

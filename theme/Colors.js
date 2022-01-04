@@ -11,6 +11,10 @@ export default {
     red1:'#BB0000',
     bghome: '#EC4E2A',
     green_phone: '#249968',
-    button_pay: '#D0540E'
+    button_pay: '#D0540E',
+    white: '#FFF',
+    dark: '#000',
+    light: '#E5E5E5',
+    grey: '#908e8c',
     
   };
