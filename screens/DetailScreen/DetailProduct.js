@@ -33,7 +33,7 @@ export default function DetailProduct({route, navigation }){
   const [accesstoken, setAccessToken] = useState()
   AsyncStorage.getItem('access_token').then(accesstoken => {setAccessToken(accesstoken)})
 
-  const {_v, _id, avata, description, name, price, voted} = route.params.item 
+  const {_v, _id, img, description, name, price, voted} = route.params.item 
   
   const dataProduct = {
     cartItems: [
@@ -83,7 +83,7 @@ export default function DetailProduct({route, navigation }){
         backTextStyle={{fontSize: 14, color: '#ffff'}}
         titleStyle={{ fontSize: 22, left: 20, bottom: 20, color: '#ffff' }}
         headerMaxHeight={200}
-        imageSource={{uri:avata}}
+        imageSource={{uri:img}}
         toolbarColor='#FFF'
         disabled={false}
       >

@@ -33,11 +33,10 @@ export default function TabHome()  {
                 
                 <SearchBar/>
             </View>
-            <ScrollView>
-                <SlideBanner/>
-                <ListCategory/>
-                <ListProduct/> 
-            </ScrollView>
+            <SlideBanner/>
+            <ListCategory/>
+            <ListProduct/> 
+
             
         </SafeAreaView>
             
