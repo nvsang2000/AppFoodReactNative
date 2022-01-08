@@ -17,51 +17,52 @@ import axios from "axios";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import Colors from '../../theme/Colors';
-import  {
-    Entypo
+
+import  { 
+  Fontisto, 
+  FontAwesome,
+  Entypo,
+  Ionicons,
+  Feather,
+  AntDesign,
+  MaterialIcons
 } from '@expo/vector-icons';//icon
 
 export default function (props){
     const navigation = useNavigation();
     const [product, setProduct] = useState([])
-    const [KeySearch, setKeySearch] = useState('')
-    const [isLoading, setIsLoad] =useState(true)
+    const [KeySearch, setKeySearch] = useState("")
 
-    useEffect(() =>{
-        function getKey () {
-            const url =  API_URL + '/api/search-key'
-            axios.get(url,KeySearch,{
-            headers: { 
-                "content-type": "application/json" 
-            },
-            data : 'banh cuon'
-            }).then((response)=> {
-                const result = response.data
-                const {success, product} = result
-                console.log(result)
-                if(success == true){
-                    console.log(product)
-                    setProduct(product)
- 
-                }else{
-                    setIsLoad(false)
-                }
-            })
-            .catch(error => {
-                setIsLoad(false)
-                console.log(error)
-            })
-        }
-        getKey()
-
-    }, [isLoading])
     
-
+    const dataProduct = {
+        key: KeySearch
+    }
+    async function getKey () {
+        const url =  API_URL + '/api/search-key'
+        await axios.post(url,dataProduct,{
+            headers: { 
+                "content-type": "application/json"
+            },
+        }) 
+        .then((response)=> {
+            const result = response.data
+            const {success, product} = result
+            if(success == true){
+                setProduct(product)
+            }else{
+                console.log("search fail")
+            }
+            })
+        .catch(error => {
+            console.log(error)
+        })
+    }
+    
     const renderProduct =(item, index)=>{
         return (
             <View style={styles.card}> 
             <TouchableOpacity onPress={() => navigation.navigate('DetailProduct',{item})}>       
-                <Image style={styles.cardImage} source={{uri:item.avata}}/>
+                <Image style={styles.cardImage} source={{uri:item.img}}/>
                 <View style={styles.cardContain}>
                     <Text style={styles.title}>{item.name}</Text>
                 </View>
@@ -72,18 +73,50 @@ export default function (props){
     return (
         <SafeAreaView>
             <View style={styles.container} >
-                <View style={styles.searchContainer}>
-                    <TouchableOpacity>
-                        <View style={styles.vwSearch}>
-                            <Entypo style={styles.icSearch}  name="arrow-long-left" size={24} color="black" />
-                        </View>
-                    </TouchableOpacity>
-                    <TextInput
-                    style={styles.textInput}
-                    onChangeText={ text => setKeySearch(text) }
-                    placeholder="  Enter Search ..."
+                <View 
+                    style={{
+                        flexDirection: 'row',
+                        marginBottom: 10
+                    }}
+                >
+                    <View>
+                        <TouchableOpacity  onPress={()=> navigation.goBack()}>
+                            <View style= {{alignContent: 'center'}} >
+                                <Entypo style={styles.icSearch}  name="arrow-long-left" size={24} color="black" />
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{marginLeft: 20 }}>
+                        <Text style={{fontSize: 20}}>Tìm Kiếm sản phẩm</Text>
+                    </View>
+                    <View style={{right:20, position: 'absolute',}}>
+                        <TouchableOpacity   onPress={getKey}>
+                            <FontAwesome name="search" size={24} color="black" />
+                        </TouchableOpacity>
+                    </View>
                     
-                    />
+                    
+                </View>
+                <View style={styles.searchContainer}>
+                    
+                    <View 
+                        style={{
+                            width: "100%", 
+                            height: 50, 
+                            backgroundColor: Colors.white,
+                            borderRadius: 8,
+                            
+                        }}
+                    >
+                        <TextInput
+                            style={styles.textInput}
+                            onChangeText={ text => setKeySearch(text) }
+                            placeholder="  Enter Search ..."
+                        
+                        />
+                    </View>
+
+                    
                 </View>
             
             </View>
@@ -103,9 +136,8 @@ export default function (props){
 
 const styles = StyleSheet.create({
     container: {
-        alignItems: 'center',
-        padding:5,
-        flexDirection: 'row',
+        margin:10,
+        flexDirection: 'column',
         marginTop:10
     },  
     searchContainer:{
@@ -115,22 +147,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
 
     },
-    vwSearch: {
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    icSearch: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        margin: 5
-    },
-    
      textInput: {
         // backgroundColor: 'green',
         flex: 1,
         justifyContent: 'center',
         backgroundColor: Colors.secondary,
-        color: Colors.black
+        color: Colors.black,
+        paddingLeft: 10,
+        fontSize: 18
         
     },
     // flat list

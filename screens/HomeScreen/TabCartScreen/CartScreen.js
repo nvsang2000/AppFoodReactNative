@@ -27,14 +27,14 @@ import {
 } from '@env'// Environment variable
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { useNavigation } from '@react-navigation/native';
 export default function(props) {
   const [cartItem, setCartItem] = useState([])
   const [accesstoken, setAccessToken] = useState()
   const [isLoading, setLoad] = useState(true)
   const [allPayMent, setAllPayMent] = useState()
 
-
+  const navigation = useNavigation();
   AsyncStorage.getItem('access_token').then(accesstoken => {setAccessToken(accesstoken)})
   useEffect(() => {
     let abortController = new AbortController(); 
@@ -70,9 +70,14 @@ export default function(props) {
   }, [isLoading])
  
   function renderCart(item) {
+    const product = item.product
+    console.log(product)
     return (
       <View style={styles.cartCard}>
-        <Image source={{uri: item.product.avata}} style={{height: 80, width: 80}} />
+        <TouchableOpacity onPress={() =>  navigation.navigate('DetailProduct',{item:product})}>
+          <Image source={{uri: item.product.img}} style={{height: 80, width: 80}} />
+        </TouchableOpacity>
+
         <View
           style={{
             height: 100,

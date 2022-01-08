@@ -15,27 +15,9 @@ import { useNavigation } from '@react-navigation/native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 
-export default function() {
+export default function({products}) {
   const navigation = useNavigation();
-  const [products, setProducts] = useState([])
-  const url =  API_URL + '/api/product/get'
-  useEffect(() => {
-    async function getProducts() {
-      const res = await axios.get(url)
-      return res
-    }
-    getProducts()
-      .then((response) => {
-          const result = response.data
-          setProducts(result) 
-          console.log(products)
-  
-        })
-      .catch(error => {
-          console.log(error.JSON)
-      })
 
-  },[])
   const renderProduct =(item)=>{
     return (
         <View style={styles.card}>

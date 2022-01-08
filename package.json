@@ -23,6 +23,7 @@
     "formik": "^2.2.9",
     "native-base": "^3.2.2",
     "octicons-react": "^1.0.9",
+    "qs": "^6.10.2",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-icons": "^4.3.1",

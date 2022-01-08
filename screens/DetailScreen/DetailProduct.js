@@ -1,5 +1,4 @@
-import React, { Component, useState
- } from 'react';
+import React, { Component, useState, useEffect} from 'react';
 import { 
   Text, 
   View, 
@@ -31,9 +30,11 @@ import axios from "axios";
 
 export default function DetailProduct({route, navigation }){
   const [accesstoken, setAccessToken] = useState()
+  const [countItemCart, setCountItemCart] = useState(0)
+  const [isLoading, setLoad] = useState(true)
   AsyncStorage.getItem('access_token').then(accesstoken => {setAccessToken(accesstoken)})
 
-  const {_v, _id, img, description, name, price, voted} = route.params.item 
+  const {_v, _id, category, description, img, name, price } = route.params.item 
   
   const dataProduct = {
     cartItems: [
@@ -45,24 +46,75 @@ export default function DetailProduct({route, navigation }){
         }
     ]
   }
-  const postProductToCart = async() => {
-    const url =  API_URL + '/api/user/add-to-cart'
-    await axios.post(url,dataProduct,{
-      headers: { 
-        Authorization: 'Bearer ' + accesstoken ,
-        "content-type": "application/json" 
-      },
-    }).then((response)=> {  console.log(response.data) })
-      .catch(error => {console.log(error)})
-   }
+  useEffect(() => {
+    async function getCartItems (){
+      const url_get_count =  API_URL + '/api/user/get-cart'
+      const res = await axios.get(url_get_count,{
+            headers: { Authorization: 'Bearer ' + accesstoken }
+          })
+      return res
+    }
+    getCartItems().then((res)=> {  
+        const result = res.data
+        const {success, cartItems, allPayMent, countItem} =result
+        if(success == true){
+          console.log(result)
+          setCountItemCart(countItem)
+        }else{
+          console.log(result)
+          setLoad(false)
+        }
+    }).catch(error => {
+        console.log(error.JSON) 
+        setLoad(false)
+             
+    })
     
+    
+  },[setLoad])
+  async function postProductToCart () {
+        const url =  API_URL + '/api/user/add-to-cart'
+        await axios.post(url,dataProduct,{
+          headers: { 
+            Authorization: 'Bearer ' + accesstoken ,
+            "content-type": "application/json" 
+          },
+        }).then((response)=> {  
+          console.log(response.data)  
+          setLoad(false)
+        })
+        .catch(error => {
+          console.log(error)
+           setLoad(false)
+        })
+    }
+    const AddEndRemove = () => {
+      return(
+        <View style={styles.button_pay}>
+          <View style={{backgroundColor:Colors.bghome, alignItems: 'center'}}>
+            <TouchableOpacity style={{justifyContent: 'center', margin: 5 }}>
+              <Ionicons name="remove" size={24} color={Colors.white} />
+            </TouchableOpacity>
+          </View>
+          <View style={{ flex:1, alignItems: 'center',justifyContent: 'center'}}>
+            <Text>1</Text>
+          </View>
+          <View style={{backgroundColor:Colors.bghome, alignItems: 'center' }}>
+            <TouchableOpacity style={{justifyContent: 'center',  margin: 5}}>
+              <Ionicons name="add" size={24} color={Colors.white} />
+            </TouchableOpacity> 
+          </View>
+          
+        </View>
+      )
+    }
     return (
        <AnimatedHeader 
         style={{flex: 1, marginTop:40 }}
         renderLeft={() => (
           <TouchableOpacity  onPress={()=> navigation.goBack()}>
-            <View style={{margin:20, marginTop:20, alignItems:'center' }}>
-              <Ionicons name="arrow-back" size={24} color={Colors.white} />
+            <View style={{margin:20, marginTop:20, alignItems:'center'}}>
+              <Ionicons name="arrow-back" size={36} color={Colors.dark} />
             </View>
           </TouchableOpacity>
   
@@ -70,9 +122,9 @@ export default function DetailProduct({route, navigation }){
         renderRight={() => (
           <TouchableOpacity onPress={()=> navigation.navigate('CartScreen')}>
             <View style={{margin:20, marginTop:20, alignItems:'center' }}>
-              <Ionicons name="cart" size={30} color={Colors.white} />
+              <Ionicons name="cart" size={30} color={Colors.dark} />
               <View style={styles.viewCount}>
-                <Text style={styles.textCount}>1</Text>
+                <Text style={styles.textCount}>{countItemCart}</Text>
               </View>
             </View>
             
@@ -128,26 +180,7 @@ export default function DetailProduct({route, navigation }){
       </AnimatedHeader>
     );
 }
-const AddEndRemove = () => {
-  return(
-    <View style={styles.button_pay}>
-      <View style={{backgroundColor:Colors.bghome, alignItems: 'center'}}>
-        <TouchableOpacity style={{justifyContent: 'center', margin: 5 }}>
-          <Ionicons name="remove" size={24} color={Colors.white} />
-        </TouchableOpacity>
-      </View>
-      <View style={{ flex:1, alignItems: 'center',justifyContent: 'center'}}>
-        <Text>1</Text>
-      </View>
-      <View style={{backgroundColor:Colors.bghome, alignItems: 'center' }}>
-        <TouchableOpacity style={{justifyContent: 'center',  margin: 5}}>
-          <Ionicons name="add" size={24} color={Colors.white} />
-        </TouchableOpacity> 
-      </View>
-      
-    </View>
-  )
-}
+
 const styles = StyleSheet.create({
     container_title_top: {
       flex: 1,
